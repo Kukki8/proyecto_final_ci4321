@@ -138,6 +138,7 @@
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\IceCream.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ParticleEmitter.cpp" />
     <ClCompile Include="src\Shader.h" />
     <ClCompile Include="src\Skybox.cpp" />
     <ClCompile Include="src\stb_image\stb_image.cpp" />
@@ -145,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\IceCream.h" />
+    <ClInclude Include="src\ParticleEmitter.h" />
     <ClInclude Include="src\Skybox.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\stb_image\stb_image.h" />
@@ -154,6 +156,8 @@
     <None Include="src\Shaders\FragmentShader.fs" />
     <None Include="src\Shaders\LightFragmentShader.fs" />
     <None Include="src\Shaders\LightVertexShader.vs" />
+    <None Include="src\Shaders\ParticleFragmentShader.fs" />
+    <None Include="src\Shaders\ParticleVertexShader.vs" />
     <None Include="src\Shaders\SkyboxFragmentShader.fs" />
     <None Include="src\Shaders\SkyboxVertexShader.vs" />
     <None Include="src\Shaders\VertexShader.vs" />

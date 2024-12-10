@@ -36,6 +36,9 @@
     <ClCompile Include="src\IceCream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stb_image\stb_image.h">
@@ -53,6 +56,9 @@
     <ClInclude Include="src\IceCream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ParticleEmitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\VertexShader.vs" />
@@ -61,5 +67,7 @@
     <None Include="src\Shaders\SkyboxFragmentShader.fs" />
     <None Include="src\Shaders\LightVertexShader.vs" />
     <None Include="src\Shaders\LightFragmentShader.fs" />
+    <None Include="src\Shaders\ParticleVertexShader.vs" />
+    <None Include="src\Shaders\ParticleFragmentShader.fs" />
   </ItemGroup>
 </Project>

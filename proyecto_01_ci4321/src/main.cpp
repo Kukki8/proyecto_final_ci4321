@@ -15,6 +15,7 @@
 #include "Tank.h"
 #include "Skybox.h"
 #include "IceCream.h"
+#include "ParticleEmitter.h"
 
 using namespace std;
 
@@ -117,7 +118,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 }
 
-unsigned int LoadTexture(std::string path)
+unsigned int LoadTexture(std::string path, bool alpha = false)
 {
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -126,8 +127,8 @@ unsigned int LoadTexture(std::string path)
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	// Seteamos los parametros de wrapping de la textura
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, alpha ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, alpha ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 
 	// Steamos parametros de filtro en la textura
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -140,7 +141,15 @@ unsigned int LoadTexture(std::string path)
 
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		if (alpha)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		}
+		else
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -163,6 +172,7 @@ void LoadTextures()
 	textures["vanilla"] = LoadTexture("resources/textures/vanilla.jpg");
 	textures["cone"] = LoadTexture("resources/textures/cone.jpg");
 	textures["cherry"] = LoadTexture("resources/textures/cherry.jpg");
+	textures["dirt"] = LoadTexture("resources/textures/dust2.png",true);
 
 	textures["metal_normal"] = LoadTexture("resources/textures/metal_normal.png");
 	textures["block_normal"] = LoadTexture("resources/textures/blocks_normal.jpg");
@@ -217,9 +227,12 @@ int main(void) {
 
 	// Habilitamos la profundidad
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	LoadTextures();
 
+	Shader particleShader("src/Shaders/ParticleVertexShader.vs", "src/Shaders/ParticleFragmentShader.fs");
 	Shader lightShader("src/Shaders/LightVertexShader.vs", "src/Shaders/LightFragmentShader.fs");
 	Shader shader("src/Shaders/VertexShader.vs", "src/Shaders/FragmentShader.fs");
 
@@ -227,7 +240,7 @@ int main(void) {
 	lightSource.SetPosition(lightPos);
 	lightSource.Load();
 
-	Tank tank(textures["metalgreen"], textures["block"], textures["metal"], textures["metal_normal"], textures["block_normal"]);
+	Tank tank(textures["metalgreen"], textures["block"], textures["metal"], textures["metal_normal"], textures["block_normal"], textures["dirt"]);
 
 	Cube cube = Cube(2.0f, 2.0f, 2.0f);
 	cube.SetPosition(glm::vec3(0.0f, 0.0f, 15.0f));
@@ -276,7 +289,7 @@ int main(void) {
 	Skybox skybox = Skybox();
 	skybox.Load(faces);
 
-	// Configuracion del shader
+	// Configuracion de los shaders
 	shader.use();
 	shader.setInt("material.diffuse", 0);
 
@@ -288,6 +301,10 @@ int main(void) {
 
 	lightShader.use();
 	lightShader.setMat4("projection", projection);
+
+	particleShader.use();
+	particleShader.setInt("sprite", 0);
+	particleShader.setMat4("projection", projection);
 
 	/* Ciclo hasta que el usuario cierre la ventana */
 	while (!glfwWindowShouldClose(window))
@@ -303,6 +320,7 @@ int main(void) {
 
 		/* Limpieza del buffer y el buffer de profundidad */
 		glClearColor(0.761f, 1.0f, 0.992f, 1.0f);
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 view = glm::lookAt(
@@ -390,9 +408,10 @@ int main(void) {
 		sphere2.Bind(textures["metal"], textures["metal_normal"]);
 		sphere2.Draw(shader);
 
-		tank.Draw(shader);
-
 		iceCream.Draw(shader);
+
+		tank.Update(deltaTime);	
+		tank.Draw(shader, particleShader, view);
 
 		lightShader.use();
 		moveLight(&lightSource);

@@ -1,12 +1,13 @@
 #include "Tank.h"
 
-Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigned int metalNorm, unsigned int blocksNorm)
+Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigned int metalNorm, unsigned int blocksNorm, unsigned int dirt)
 {
 	this->metalG = metalG;
 	this->blocks = blocks;
 	this->metal = metal;
 	this->metalNorm = metalNorm;
 	this->blocksNorm = blocksNorm;
+	this->dirt = dirt;
 
 	body = new Cube(4.0, 1.0, 4.25);
 	body->Load();
@@ -72,10 +73,18 @@ Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigne
 			bolts[j]->Load();
 		}
 	}
+
+	emitter = new ParticleEmitter(dirt, 6, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	emitter->Load();
 }
 
-void Tank::Draw(const Shader& shader)
+void Tank::Draw(Shader& shader,Shader& particleShader, glm::mat4 view)
 {
+	particleShader.use();
+	emitter->Draw(particleShader,view, false);
+
+	shader.use();
 	canon->Bind(metal, metalNorm);
 	canon->DrawCanon(shader);
 
@@ -136,6 +145,11 @@ void Tank::Clear()
 		bolts[j]->Clean();
 	}
 
+}
+
+void Tank::Update(float dt)
+{
+	emitter->Update(dt, 2, wheels[wheelsCount]->position);
 }
 
 void Tank::moveForward(const Shader& ourShader) {

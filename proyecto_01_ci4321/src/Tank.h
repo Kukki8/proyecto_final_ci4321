@@ -2,6 +2,7 @@
 #define TANK_H
 
 #include "Geometry.h"
+#include "ParticleEmitter.h"
 
 using namespace std;
 const int wheelsCount = 5;
@@ -11,9 +12,10 @@ class Tank
 {
 public:
 
-	Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigned int metalNorm, unsigned int blocksNorm);
-	void Draw(const Shader& shader);
+	Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigned int metalNorm, unsigned int blocksNorm, unsigned int dirt);
+	void Draw(Shader& shader,Shader& particleShader, glm::mat4 view);
 	void Clear();
+	void Update(float dt);
 	void moveForward(const Shader& ourShader);
 	void moveBackwards(const Shader& ourShader);
 	unsigned int metalG;
@@ -21,6 +23,7 @@ public:
 	unsigned int metal;
 	unsigned int metalNorm;
 	unsigned int blocksNorm;
+	unsigned int dirt;
 	void moveCanonUp(float deltaTime);
 	void moveCanonDown(float deltaTime);
 	void moveCanonRight(float deltaTime);
@@ -61,6 +64,7 @@ private:
 	Cylinder* projectile;
 	bool hasProjectile;
 	bool hasBeenShot;
+	ParticleEmitter* emitter;	
 };
 
 #endif
