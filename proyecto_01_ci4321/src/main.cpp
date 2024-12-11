@@ -266,8 +266,8 @@ int main(void) {
 	}
 
 
-	Sphere sphere2 = Sphere(1.0f, 36, 18, true);
-	sphere2.SetPosition(glm::vec3(3.0f, 0.0f, 15.0f));
+	Sphere sphere2 = Sphere(2.0f, 36, 18, true);
+	sphere2.SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
 	sphere2.Load();
 
 	IceCream iceCream(textures["choco"], textures["strawberry"], textures["vanilla"], textures["cherry"], textures["cone"], textures["flavor_normal"], 
@@ -289,9 +289,14 @@ int main(void) {
 	Skybox skybox = Skybox();
 	skybox.Load(faces);
 
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.0f,  0.0f,  25.0f),
+	};
+
 	// Configuracion de los shaders
 	shader.use();
 	shader.setInt("material.diffuse", 0);
+	shader.setInt("material.specular", 1);
 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	shader.setMat4("projection", projection);
@@ -305,6 +310,10 @@ int main(void) {
 	particleShader.use();
 	particleShader.setInt("sprite", 0);
 	particleShader.setMat4("projection", projection);
+
+	shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+	shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
 
 	/* Ciclo hasta que el usuario cierre la ventana */
 	while (!glfwWindowShouldClose(window))
@@ -331,10 +340,36 @@ int main(void) {
 
 
 		shader.use();
+		shader.setFloat("material.shininess", 32.0f);
 
-		shader.setVec3("light.position", lightSource.position);
-		shader.setVec3("light.ambient", 0.6f, 0.6f, 0.6f);
-		shader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+		shader.setVec3("ballLight.position", lightSource.position);
+		shader.setVec3("ballLight.ambient", 0.1f, 0.1f, 0.1f);
+		shader.setVec3("ballLight.diffuse", 0.5f, 0.5f, 0.5f);
+
+
+		shader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+		shader.setVec3("light.ambient", 0.05f, 0.05f, 0.05f);
+		shader.setVec3("light.diffuse", 0.4f, 0.4f, 0.4f);
+		shader.setVec3("light.specular", 0.5f, 0.5f, 0.5f);
+		shader.setVec3("viewPos", cameraPos);
+
+		// point light 1
+		shader.setVec3("pointLights[0].position", pointLightPositions[0]);
+		shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		shader.setFloat("pointLights[0].constant", 1.0f);
+		shader.setFloat("pointLights[0].linear", 0.09f);
+		shader.setFloat("pointLights[0].quadratic", 0.032f);
+
+		shader.setVec3("spotLight.position", cameraPos);
+		shader.setVec3("spotLight.direction", cameraFront);
+		shader.setFloat("spotLight.constant", 1.0f);
+		shader.setFloat("spotLight.linear", 0.09f);
+		shader.setFloat("spotLight.quadratic", 0.032f);
+		shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+
 
 		shader.setMat4("view", view);
 
@@ -378,6 +413,19 @@ int main(void) {
 			//cube.moveForward(ourShader);
 			tank.fire();
 
+		}
+
+
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+			shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+			shader.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
+			shader.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+			shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+			shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+			shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
 		}
 
 		if (CheckCollision(cube, tank)) {
