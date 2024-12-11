@@ -24,4 +24,6 @@ Ejecutar el archivo "tank.exe", en la carpeta "\proyecto_01_ci4321\proyecto_01_c
  * Cámara: WASD.
  * Cañón: UHJK.
  * Disparar: espacio.
+ * Encender luz cámara: P
+ * Apagar luz cámara: L
 
