@@ -74,15 +74,13 @@ Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigne
 		}
 	}
 
-	emitter = new ParticleEmitter(dirt, 100, glm::vec3(0.0f, 0.0f, 0.0f));
+	emitter = new ParticleEmitter(dirt, 120, glm::vec3(0.0f, 0.0f, 0.0f),0.05,false);
 
 	emitter->Load();
 }
 
 void Tank::Draw(Shader& shader,Shader& particleShader, glm::mat4 view)
 {
-	particleShader.use();
-	emitter->Draw(particleShader,view, false);
 
 	shader.use();
 	canon->Bind(metal, metalNorm);
@@ -106,24 +104,32 @@ void Tank::Draw(Shader& shader,Shader& particleShader, glm::mat4 view)
 	}
 
 	if (hasProjectile && !hasBeenShot) {
-		projectile = new Cylinder(0.1f, 1.0f, 64);
-		glm::vec3 projectilePos;
-		projectilePos = canon->position;
-		projectilePos.z = 0.1f;
+
+		projectile = new Cylinder(0.05f, 0.05f, 0.3f, 64);
+		glm::vec3 projectilePos = canon->position + glm::vec3(0.0f, 0.0f, canon->height / 2);
+
 		glm::vec3 projectileRot = canon->rotation;
 		projectile->SetRotation(projectileRot);
 
 		projectile->SetPosition(projectilePos);
 		projectile->Load();
 		hasBeenShot = true;
+		emitter->Play(projectilePos);
+
 	}
 	if (hasProjectile && hasBeenShot) {
+		particleShader.use();
+		emitter->Draw(particleShader, view, false);
+		shader.use();
+
 		if (projectile->rotation != glm::vec3(0.0f)) {
 			projectile->position += glm::vec3(0.0f, projectile->rotation.y, projectile->rotation.y) * 0.05f * 0.25f;
+			projectile->Bind(blocks, blocksNorm);
 			projectile->Draw(shader);
 		}
 		else {
 			projectile->position += glm::normalize(glm::vec3(0.0f, 0.0f, 0.50f)) * 0.05f * 0.25f;
+			projectile->Bind(blocks, blocksNorm);
 			projectile->Draw(shader);
 		}		
 	}
@@ -149,7 +155,8 @@ void Tank::Clear()
 
 void Tank::Update(float dt)
 {
-	emitter->Update(dt, 2, wheels[wheelsCount]->position);
+	glm::vec3 startPos = canon->position + glm::vec3(0.0f,0.0f, canon->height/2);
+	emitter->Update(dt, 5, startPos);
 }
 
 void Tank::moveForward(const Shader& ourShader) {

@@ -17,12 +17,13 @@ struct Particle {
 class ParticleEmitter {
 public:
 
-	ParticleEmitter(unsigned int textureID, unsigned int amount, glm::vec3 direction, float particleScale = 0.1f, float range = 0.5f);
+	ParticleEmitter(unsigned int textureID, unsigned int amount, glm::vec3 direction, float particleScale = 0.1f, bool continuous = true);
 
 	void Update(float dt, unsigned int newParticles, glm::vec3 startPos);
 	void Draw(const Shader& shader, glm::mat4 view,bool glow = false);
 	void Load();
 	void Bind();
+	void Play(glm::vec3 startPos);
 
 private:
 	unsigned int amount;
@@ -30,6 +31,8 @@ private:
 	unsigned int textureID;
 	float range;
 	float particleScale;
+	bool continuous;
+	bool started;
 	glm::vec3 direction;
 	std::vector<Particle> particles;
 	unsigned int lastUsedParticle = 0;
