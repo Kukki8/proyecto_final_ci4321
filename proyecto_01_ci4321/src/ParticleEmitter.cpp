@@ -41,7 +41,7 @@ void ParticleEmitter::Update(float dt, unsigned int newParticles, glm::vec3 star
         if (p.Life > 0.0f)
         {	
             // Si la particula actual esta viva, se actualiza
-            p.Position -= p.Velocity * (dt*0.05f);
+            p.Position -= p.Velocity * dt;
             p.Color.a -= dt * 2.5f;
         }
     }
@@ -61,6 +61,9 @@ void ParticleEmitter::Draw(const Shader& shader, glm::mat4 view, bool glow)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, particle.Position);
+			glm::vec3 right = glm::normalize(view[0]);
+			model = glm::rotate(model, glm::radians(90.0f), right);
+
 			shader.setMat4("view", view);
 			shader.setMat4("model", model);
 			shader.setVec4("color", particle.Color);
@@ -145,8 +148,12 @@ void ParticleEmitter::RespawnParticle(Particle& particle, glm::vec3 startPos, gl
 {
     float randomNumber = ((rand() % 100)-range)/10.0f;
 
-	particle.Position = startPos + randomNumber;
-	particle.Velocity =  direction*0.001f;
+	float randomX = ((rand() % 100) - 50) / 100.0f;
+	float randomY = ((rand() % 100) - 50) / 100.0f;
+	float randomZ = ((rand() % 100) - 50) / 100.0f;
+
+	particle.Position = startPos;
+	particle.Velocity = direction + glm::vec3(randomX, randomY, randomZ);
     particle.Color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     particle.Life = 1.0f;
 }

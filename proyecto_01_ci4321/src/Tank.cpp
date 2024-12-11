@@ -74,7 +74,7 @@ Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigne
 		}
 	}
 
-	emitter = new ParticleEmitter(dirt, 6, glm::vec3(0.0f, 0.0f, 0.0f));
+	emitter = new ParticleEmitter(dirt, 100, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	emitter->Load();
 }
