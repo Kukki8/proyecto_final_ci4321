@@ -290,7 +290,7 @@ int main(void) {
 	skybox.Load(faces);
 
 	glm::vec3 pointLightPositions[] = {
-		glm::vec3(0.0f,  0.0f,  25.0f),
+		glm::vec3(0.0f,  5.0f,  5.0f),
 	};
 
 	// Configuracion de los shaders
@@ -348,14 +348,14 @@ int main(void) {
 
 
 		shader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
-		shader.setVec3("light.ambient", 0.05f, 0.05f, 0.05f);
-		shader.setVec3("light.diffuse", 0.4f, 0.4f, 0.4f);
-		shader.setVec3("light.specular", 0.5f, 0.5f, 0.5f);
+		shader.setVec3("light.ambient", 0.00f, 0.00f, 0.00f);
+		shader.setVec3("light.diffuse", 0.0f, 0.0f, 0.0f);
+		shader.setVec3("light.specular", 0.0f, 0.0f, 0.0f);
 		shader.setVec3("viewPos", cameraPos);
 
 		// point light 1
-		shader.setVec3("pointLights[0].position", pointLightPositions[0]);
-		shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		shader.setVec3("pointLights[0].position", tank.getLightPosition());
+		shader.setVec3("pointLights[0].ambient", 0.08f, 0.08f, 0.08f);
 		shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
 		shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
 		shader.setFloat("pointLights[0].constant", 1.0f);

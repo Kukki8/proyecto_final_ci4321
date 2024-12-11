@@ -54,10 +54,16 @@ public:
 		hasBeenShot = false;
 	}
 
+	inline glm::vec3 getLightPosition()
+	{
+		return light->position;
+	}
+
 private:
 
 	Cube* body;
 	Sphere* top;
+	Sphere* light;
 	Cylinder* canon;
 	Cylinder* wheels[wheelsCount];
 	Cube* bolts[boltsCount * wheelsCount];

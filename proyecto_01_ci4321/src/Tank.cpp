@@ -12,10 +12,16 @@ Tank::Tank(unsigned int metalG, unsigned int blocks, unsigned int metal, unsigne
 	body = new Cube(4.0, 1.0, 4.25);
 	body->Load();
 	
+
+
 	glm::vec3 topPos = body->position + glm::vec3(0.0f, 0.5f, -0.25f);
 	top = new Sphere(1.25f, 36, 18, false);
 	top->SetPosition(topPos);
 	top->Load();
+
+	light = new Sphere(0.0f);
+	light->SetPosition(topPos + glm::vec3(0.0f, 1.35f, 0.0f));
+	light->Load();
 
 	glm::vec3 canonPos = top->position + glm::vec3(0.0f, 0.5f, 1.0f);
 	canon = new Cylinder(0.25f, 0.25f, 2.0f);
@@ -91,6 +97,8 @@ void Tank::Draw(Shader& shader,Shader& particleShader, glm::mat4 view)
 
 	top->Bind(metalG, metalNorm);
 	top->Draw(shader);
+
+	light->Draw(shader);
 
 	for (int i = 0; i < wheelsCount; i++) {
 		wheels[i]->Bind(blocks,blocksNorm);
